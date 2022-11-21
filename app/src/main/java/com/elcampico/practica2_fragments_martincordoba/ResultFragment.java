@@ -14,40 +14,35 @@ import android.widget.TextView;
 
 public class ResultFragment extends Fragment {
 
+    //Creamos la clave para recibir el bundle y resultado para almacenar el valor que agregamos
     private final String BUNDLE_KEY = "KEY";
     private int resultado;
 
     public ResultFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            resultado = savedInstanceState.getInt(BUNDLE_KEY);
-        }
-
-        getParentFragmentManager().setFragmentResultListener(BUNDLE_KEY, this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
-                resultado = bundle.getInt(BUNDLE_KEY);
-                TextView frText = getView().findViewById(R.id.fr_textView);
-                frText.setText(String.valueOf(resultado));
-            }
-        });
     }
 
     @Override
+    //Comenzamos a traer valores cuando la vista se ha creado
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_result, container, false);
-    }
+        View rootView = inflater.inflate(R.layout.fragment_result, container, false);
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt("resultado",resultado);
+        //Al crearse la vista, usamos el Fragment Manager para  crear un Listener que detecte cuando
+        // se pasa un parámetro por bundle al fragment.
+        getParentFragmentManager().setFragmentResultListener(BUNDLE_KEY, this, new FragmentResultListener() {
+            //El tercer parámetro es un FragmentResultListener, es el encargado de detecetar que se está pasando un FragmentResult desde la Activity anterior.
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle bundle) {
+                resultado = bundle.getInt(BUNDLE_KEY); //Recogemos el valor del bundle y lo pasamos a resultado
+                TextView frText = rootView.findViewById(R.id.fr_textView); //Creamos el TextView y le asignamos su vista
+                frText.setText(String.valueOf(resultado)); //Seteamos el valor del texto al nuevo resultado
+            }
+        });
+        return rootView;
     }
 }
